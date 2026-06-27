@@ -1,0 +1,25 @@
+{
+  "name": "redis-practice",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch index.js",
+    "start": "node index.js",
+    "seed": "node prisma/seed.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "Node.js API for practicing Redis caching patterns",
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "dotenv": "^16.5.0",
+    "express": "^5.2.1",
+    "prisma": "^6.19.3",
+    "redis": "^6.0.1"
+  }
+}
