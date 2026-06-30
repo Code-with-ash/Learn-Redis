@@ -125,6 +125,10 @@ router.delete("/:id", async (req, res) => {
       where: { id: userId },
     });
 
+    // Invalidate cache for deleted user
+    await client.del(`user:${userId}`);
+    console.log(`Cache invalidated for user:${userId}`);
+
     return res.json({ message: "User deleted successfully" });
   } catch (error) {
     console.error("Error deleting user:", error);
