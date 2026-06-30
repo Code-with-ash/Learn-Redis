@@ -1,5 +1,6 @@
 import { Router } from "express";
 import prisma from "../db.js";
+import client from "../../redis.js";
 
 const router = Router();
 
@@ -21,6 +22,16 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const postId = parseInt(req.params.id);
+
+    // Check Redis cache first
+    const cached = await client.get(`post:${postId}`);
+    if (cached) {
+      console.log("Post Cache HIT");
+      return res.json(JSON.parse(cached));
+    }
+
+    console.log("Post Cache MISS");
+
     const post = await prisma.post.findUnique({
       where: { id: postId },
       include: { author: { select: { id: true, name: true, email: true } } },
@@ -29,6 +40,9 @@ router.get("/:id", async (req, res) => {
     if (!post) {
       return res.status(404).json({ error: "Post not found" });
     }
+
+    // Cache for 1 hour
+    await client.setEx(`post:${postId}`, 60 * 60, JSON.stringify(post));
 
     return res.json(post);
   } catch (error) {
