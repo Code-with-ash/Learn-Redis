@@ -14,6 +14,8 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.json({
     message: "Redis Practice API",
+    status: "healthy",
+    version: "1.0.0",
     endpoints: {
       users: "/api/users",
       posts: "/api/posts",
