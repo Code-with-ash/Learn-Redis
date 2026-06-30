@@ -85,6 +85,10 @@ router.put("/:id", async (req, res) => {
       include: { author: { select: { id: true, name: true, email: true } } },
     });
 
+    // Refresh cache with updated post data
+    await client.setEx(`post:${postId}`, 60 * 60, JSON.stringify(post));
+    console.log(`Cache refreshed for post:${postId}`);
+
     return res.json(post);
   } catch (error) {
     console.error("Error updating post:", error);
@@ -100,6 +104,10 @@ router.delete("/:id", async (req, res) => {
     await prisma.post.delete({
       where: { id: postId },
     });
+
+    // Invalidate cache for deleted post
+    await client.del(`post:${postId}`);
+    console.log(`Cache invalidated for post:${postId}`);
 
     return res.json({ message: "Post deleted successfully" });
   } catch (error) {
